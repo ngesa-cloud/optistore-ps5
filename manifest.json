@@ -1,0 +1,15 @@
+{
+  "name": "OptiStore5 — PS5 Package Library",
+  "short_name": "OptiStore5",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0a0c10",
+  "theme_color": "#0070d1",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230070d1%22/><text y=%2268%22 x=%2250%22 font-size=%2252%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22white%22>PS5</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

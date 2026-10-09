@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0a0c10">
+  <title>OptiStore5 — PS5 Package & Homebrew Library</title>
+  <meta name="description" content="Ultra-fast package indexer, library browser, and remote installer for PS5 & PS4 homebrew and packages.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230070d1%22/><text y=%2268%22 x=%2250%22 font-size=%2252%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22white%22>PS5</text></svg>">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">PS5</div>
+      <div class="brand-txt">
+        <span class="n">OptiStore<em>5</em></span>
+        <span class="s">Package Library</span>
+      </div>
+    </div>
+
+    <!-- Live Search Input -->
+    <div class="search-wrap">
+      <span class="ico" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+      </span>
+      <input type="search" id="search" placeholder="Search by title, Title ID (e.g. PPSA01411)..." autocomplete="off" spellcheck="false">
+    </div>
+
+    <!-- Header Actions -->
+    <div class="top-actions">
+      <div class="count-pill" id="countPill"><b>0</b> titles</div>
+
+      <!-- Filter Button & Popover -->
+      <div class="popover-wrap">
+        <button class="act-btn filter" id="filterBtn" type="button" aria-label="Filters">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+          </svg>
+          <span>Filter</span>
+          <span class="filter-count" id="filterCount" style="display:none">0</span>
+        </button>
+        <div class="popover" id="filterPopover">
+          <div class="popover-head">
+            <h4>Filter Packages</h4>
+            <button type="button" id="filterClear">Clear</button>
+          </div>
+          <div class="pop-section">
+            <div class="pop-label">Category</div>
+            <div class="pop-chips" id="filterCatChips"></div>
+          </div>
+          <div class="pop-section">
+            <div class="pop-label">Region</div>
+            <select class="pop-select" id="filterRegion">
+              <option value="">All Regions</option>
+              <option value="USA">USA</option>
+              <option value="EUR">EUR</option>
+              <option value="JPN">JPN</option>
+              <option value="ASIA">ASIA</option>
+            </select>
+          </div>
+          <div class="pop-section" id="filterToggles"></div>
+        </div>
+      </div>
+
+      <!-- Sort Button & Popover -->
+      <div class="popover-wrap">
+        <button class="act-btn sortbtn" id="sortBtn" type="button" aria-label="Sort">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/>
+          </svg>
+          <span id="sortLabel">Sort</span>
+        </button>
+        <div class="popover" id="sortPopover">
+          <div class="popover-head">
+            <h4>Sort Order</h4>
+          </div>
+          <div id="sortOptions"></div>
+        </div>
+      </div>
+
+      <!-- Remote PS5 Direct Installer Setup -->
+      <button class="act-btn ps5-config" id="ps5ConfigBtn" type="button" title="PS5 Remote PKG Installer Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>
+        </svg>
+        <span>PS5 IP</span>
+      </button>
+
+      <!-- Password Assistant -->
+      <button class="act-btn pw" id="passBtn" type="button" title="Archive Passwords">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>
+        </svg>
+        <span>Passwords</span>
+      </button>
+
+      <!-- Telegram Channel -->
+      <a class="act-btn tg" href="https://t.me/OptiTronOffical" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .37z"/>
+        </svg>
+        <span>Telegram</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="wrap">
+    <!-- Hero / Title Header -->
+    <section class="hero">
+      <h1>OptiStore<em>5</em> — PS5 Package Library</h1>
+      <p>High-performance package explorer, TitleID registry, and direct remote installer for PlayStation 5 &amp; PS4 homebrew.</p>
+
+      <!-- Multi-Catalog Switcher Tabs -->
+      <div style="margin-top: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <nav class="catalog-tabs" id="catalogTabs" aria-label="Catalogs">
+          <button class="cat-tab active" data-cat="dlps" type="button">
+            <span>DLPSGAME</span>
+            <span class="tab-count" id="tabCountDlps">0</span>
+          </button>
+          <button class="cat-tab" data-cat="pippo" type="button">
+            <span>.exfat (Pippo)</span>
+            <span class="tab-count" id="tabCountPippo">0</span>
+          </button>
+          <button class="cat-tab" data-cat="pfs" type="button">
+            <span>PFS (Grouped)</span>
+            <span class="tab-count" id="tabCountPfs">0</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Quick Metrics Bar -->
+      <div class="stats">
+        <div class="stat"><span class="v b" id="statTitles">0</span><span class="k">Total Titles</span></div>
+        <div class="stat"><span class="v g" id="statGames">0</span><span class="k">Games</span></div>
+        <div class="stat"><span class="v" id="statDlc">0</span><span class="k">DLC &amp; Updates</span></div>
+        <div class="stat"><span class="v" id="statLinks">0</span><span class="k">Mirror Links</span></div>
+      </div>
+    </section>
+
+    <!-- Update / Status Banner -->
+    <div class="update-banner" id="updateBanner">
+      <div class="ub-left">
+        <span class="ub-dot" id="ubDot"></span>
+        <span class="ub-label" id="ubLabel">Catalog loaded</span>
+        <span class="ub-time" id="ubTime"></span>
+        <span class="ub-sep" id="ubSep"></span>
+        <span class="ub-source" id="ubSource"></span>
+        <span class="ub-badge direct" id="ubBadge">local data</span>
+      </div>
+      <div class="ub-right">
+        <button class="ub-refresh" id="ubRefresh" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          <span>Sync Data</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Category Chipbar -->
+    <div class="chipbar" id="chipbar"></div>
+
+    <!-- Package Grid Container -->
+    <section class="grid" id="grid"></section>
+  </main>
+
+  <!-- Package Inspector Modal -->
+  <div class="overlay" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="close-x" id="modalClose" aria-label="Close modal">&times;</button>
+      <div class="m-hero">
+        <div class="m-cover" id="mCover"></div>
+        <div class="m-info">
+          <h2 id="mTitle">Package Title</h2>
+          <div class="m-sub" id="mSub">PPSA00000 &bull; v1.00</div>
+          <div class="m-chips" id="mChips"></div>
+          <div class="m-quick-actions">
+            <button class="btn primary sm" id="mCopyAll" type="button">Copy All Links</button>
+            <a class="btn ghost sm" id="mSource" target="_blank" rel="noopener noreferrer">Original Source</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pippo Notice Callout -->
+      <div class="callout warning" id="mPippoCallout" style="display:none">
+        <strong>🔒 Pippo Link-Lock Active:</strong> Mirrors from pippo hosts require the password <code>pippo</code> (strictly lowercase).
+      </div>
+
+      <!-- Includes Section (for grouped PFS items) -->
+      <div class="m-section" id="mIncludesSection" style="display:none">
+        <h4>Included Packages &amp; Add-ons</h4>
+        <div class="inc-list" id="mIncludes"></div>
+      </div>
+
+      <!-- Specifications Section -->
+      <div class="m-section" id="mSpecsSection">
+        <h4>Package Specifications</h4>
+        <div class="specs-grid" id="mSpecs"></div>
+      </div>
+
+      <!-- Download Links Section -->
+      <div class="m-section">
+        <div class="sec-head">
+          <h4>Download Mirrors</h4>
+          <span class="sec-badge" id="mLinkCount">0 links</span>
+        </div>
+        <div class="links-list" id="mLinks"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PS5 Direct Remote Installer Modal -->
+  <div class="overlay" id="ps5Modal" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h3>🎮 PS5 Remote PKG Installer</h3>
+        <button class="close-x" data-close="ps5Modal">&times;</button>
+      </div>
+      <p class="modal-desc">Send package download and install commands directly to your jailbroken PS5 console via etaHEN, itemzflow, or GoldHEN Remote PKG Installer API.</p>
+      <div class="form-group">
+        <label for="ps5IpInput">PS5 Console IP Address</label>
+        <input type="text" id="ps5IpInput" placeholder="e.g. 192.168.1.50" class="input-text">
+      </div>
+      <div class="form-group">
+        <label for="ps5PortInput">API Port (Default: 12800)</label>
+        <input type="number" id="ps5PortInput" value="12800" class="input-text">
+      </div>
+      <div class="actions-row">
+        <button class="btn primary" id="savePs5Config">Save Console IP</button>
+        <button class="btn ghost" id="testPs5Ping">Test Connection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Passwords Modal -->
+  <div class="overlay" id="passModal" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h3>🔑 Scene Passwords</h3>
+        <button class="close-x" data-close="passModal">&times;</button>
+      </div>
+      <p class="modal-desc">Common passwords used to unlock multi-part RAR archives and link-locking services in the PS5/PS4 scene.</p>
+      
+      <div class="pw-group-label">Archive Extraction Passwords</div>
+      <div id="passPwListDlps"></div>
+
+      <div class="pw-group-label" style="margin-top:14px">Link Locker Passwords</div>
+      <div id="passPwListLocks"></div>
+    </div>
+  </div>
+
+  <!-- Drag & Drop Overlay -->
+  <div class="drop-overlay" id="dropOverlay">
+    <div class="drop-box">
+      <div class="drop-icon">📂</div>
+      <h3>Drop Catalog JSON Here</h3>
+      <p>Load custom package dumps or personal collections instantly offline.</p>
+    </div>
+  </div>
+
+  <!-- Toast Notification Box -->
+  <div class="toasts" id="toasts"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
